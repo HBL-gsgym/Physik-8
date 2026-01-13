@@ -1,0 +1,1644 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arbeitsblatt – Der Stromkreis (interaktiv)</title>
+
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code','select','option'] }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+  :root{
+    --bg:#f3f5f9;
+    --card:#ffffff;
+    --ink:#111;
+    --muted:#444;
+    --line:#d7dbe3;
+    --accent:#0b57d0;
+    --ok:#0a7a2f;
+    --bad:#b00020;
+    --chip:#eef3ff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    padding:22px;
+    font: 15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+  }
+  .page{max-width:980px;margin:0 auto}
+  .topbar{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+  }
+  .headerline{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;
+    margin-bottom:10px;
+  }
+  .badge{
+    background:var(--chip);
+    border:1px solid #d6e2ff;
+    color:#0b2c7a;
+    padding:4px 10px;
+    border-radius:999px;
+    font-weight:800;
+    font-size:13px;
+  }
+  h1{font-size:18px;margin:0}
+  .meta{color:var(--muted);font-size:13px;margin-top:4px}
+  .headgrid{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    gap:12px;
+    align-items:end;
+  }
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+  button{
+    font-size:14px;
+    padding:8px 12px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:#fff;
+    cursor:pointer;
+  }
+  button.primary{
+    background:var(--accent);
+    color:#fff;
+    border-color:transparent;
+  }
+  button:disabled{opacity:.55; cursor:not-allowed;}
+  .field{
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .field label{font-weight:800; font-size:13px}
+  .field input{
+    width: 320px;
+    max-width: 100%;
+    padding:10px 12px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:#fff;
+    font-size:15px;
+  }
+  .note{
+    margin-top:10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+    color:var(--muted);
+    font-size:13px;
+  }
+  .task{
+    margin-top:14px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.05);
+  }
+  .taskHead{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    justify-content:space-between;
+  }
+  .nr{
+    font-weight:900;
+    font-size:16px;
+    min-width:42px;
+    height:32px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:#f2f4f8;
+    border:1px solid var(--line);
+  }
+  .tTitle{margin:0; font-size:15px}
+  .prompt{margin:8px 0 10px; color:var(--muted); font-size:13px}
+  .mc label{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    margin:8px 0;
+    background:#fff;
+  }
+  .mc input{margin-top:2px}
+  .btnrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+  .feedback{margin-top:10px; font-weight:900;}
+  .ok{color:var(--ok);}
+  .bad{color:var(--bad);}
+  .hint{color:var(--muted); font-weight:700; font-size:13px; margin-top:6px}
+  .solutionBtn{display:none}
+  .solution{
+    display:none;
+    margin-top:12px;
+    border-top:1px solid var(--line);
+    padding-top:12px;
+  }
+  .solution h3{margin:0 0 8px; font-size:14px}
+  .solution .small{color:var(--muted); font-size:13px}
+
+  /* Skizzenbereich */
+  .sketchWrap{display:grid; grid-template-columns: 1fr; gap:10px; margin-top:10px;}
+  .sketchBar{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .sketch{
+    width:100%;
+    max-width:860px;
+    aspect-ratio: 16/7;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:#fff;
+    display:block;
+    touch-action:none;
+  }
+  .mini{font-size:13px;color:var(--muted);font-weight:650}
+
+  /* Zuordnungskarte */
+  .card2{
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#fff;
+    margin-top:10px;
+  }
+  select{
+    font-size:15px;
+    padding:8px 10px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:#fff;
+    width: min(520px, 100%);
+  }
+
+  @media print{
+    body{background:#fff}
+    .topbar, button, .note, .solutionBtn{display:none !important}
+    .task{box-shadow:none}
+  }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <div class="topbar">
+    <div class="headerline">
+      <span class="badge">HBL</span>
+      <span class="badge">Physik 8a</span>
+      <span class="badge">Der Stromkreis</span>
+    </div>
+
+    <div class="headgrid">
+      <div>
+        <h1>Der Stromkreis – Reihen-/Parallelschaltung, UND/ODER, Wirkungen (interaktiv)</h1>
+        <div class="meta">
+          Kurs: <b id="metaCourse"></b> &nbsp;|&nbsp; Arbeitsblatt-ID: <b id="metaSheet"></b>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button onclick="showScore()">Ergebnis anzeigen</button>
+        <button id="sendBtn" class="primary" onclick="sendResults()" disabled>Ergebnisse an HBL senden</button>
+        <button onclick="showInfo()">Info</button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px; display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end;">
+      <div class="field">
+        <label for="studentName">Name (Pflicht)</label>
+        <input id="studentName" type="text" autocomplete="name" placeholder="Vorname Nachname">
+      </div>
+
+      <div class="note">
+        <b>Regel:</b> Es zählt nur, ob eine Aufgabe <b>beim ersten Prüfen</b> richtig war.<br>
+        Nach <b>3 Fehlversuchen</b> (oder bei richtiger Lösung) wird <b>„Lösungsweg anzeigen“</b> freigeschaltet.
+      </div>
+    </div>
+
+    <div id="score" class="feedback" style="margin-top:12px;"></div>
+    <div id="info" class="hint"></div>
+  </div>
+
+  <!-- ===================== 1 ===================== -->
+  <section class="task" data-task="1">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">1</div>
+        <div>
+          <p class="tTitle"><b>Welche Bedingungen müssen erfüllt sein, damit elektrischer Strom fließt?</b></p>
+          <div class="prompt">Mehrfachauswahl (3 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q1">
+      <label><input type="checkbox" name="q1" value="a"> Eine Spannungsquelle ist vorhanden.</label>
+      <label><input type="checkbox" name="q1" value="b"> Der Stromkreis ist geschlossen.</label>
+      <label><input type="checkbox" name="q1" value="c"> Ein Verbraucher ist eingebaut.</label>
+      <label><input type="checkbox" name="q1" value="d"> Elektronen bewegen sich vom Plus- zum Minuspol.</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkMulti(1,'q1',['a','b','c'])">Prüfen</button>
+      <button onclick="resetUI(1)">Zurücksetzen</button>
+    </div>
+    <div id="f1" class="feedback"></div>
+    <button id="sb1" class="solutionBtn" onclick="toggleSolution(1)">Lösungsweg anzeigen</button>
+    <div id="sol1" class="solution">
+      <h3>Lösung (Aufgabe 1)</h3>
+      <div class="small">
+        Für Stromfluss braucht es eine <b>Spannungsquelle</b>, einen <b>geschlossenen Stromkreis</b> und einen <b>Verbraucher</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section class="task" data-task="2">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">2</div>
+        <div>
+          <p class="tTitle"><b>Ordne den Beispielen die passende Wirkung des elektrischen Stroms zu.</b></p>
+          <div class="prompt">Zuordnung (4 Zuordnungen)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card2">
+      <div>Wasserkocher →
+        <select name="m2_1">
+          <option value="">– auswählen –</option>
+          <option value="waerme">Wärmewirkung</option>
+          <option value="magnet">Magnetische Wirkung</option>
+          <option value="licht">Lichtwirkung</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">Elektromagnet →
+        <select name="m2_2">
+          <option value="">– auswählen –</option>
+          <option value="waerme">Wärmewirkung</option>
+          <option value="magnet">Magnetische Wirkung</option>
+          <option value="licht">Lichtwirkung</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">LED →
+        <select name="m2_3">
+          <option value="">– auswählen –</option>
+          <option value="waerme">Wärmewirkung</option>
+          <option value="magnet">Magnetische Wirkung</option>
+          <option value="licht">Lichtwirkung</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">Sicherung →
+        <select name="m2_4">
+          <option value="">– auswählen –</option>
+          <option value="waerme">Wärmewirkung</option>
+          <option value="magnet">Magnetische Wirkung</option>
+          <option value="licht">Lichtwirkung</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkMatch(2, {m1:'waerme',m2:'magnet',m3:'licht',m4:'waerme'}, ['m2_1','m2_2','m2_3','m2_4'])">Prüfen</button>
+      <button onclick="resetUI(2)">Zurücksetzen</button>
+    </div>
+    <div id="f2" class="feedback"></div>
+    <button id="sb2" class="solutionBtn" onclick="toggleSolution(2)">Lösungsweg anzeigen</button>
+    <div id="sol2" class="solution">
+      <h3>Lösung (Aufgabe 2)</h3>
+      <div class="small">
+        Wasserkocher → Wärmewirkung<br>
+        Elektromagnet → magnetische Wirkung<br>
+        LED → Lichtwirkung<br>
+        Sicherung → Wärmewirkung (Erwärmung/Schmelzen zum Schutz)
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section class="task" data-task="3">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">3</div>
+        <div>
+          <p class="tTitle"><b>Welche Aussage zur technischen Stromrichtung ist korrekt?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q3">
+      <label><input type="radio" name="q3" value="a"> Strom fließt vom Minus- zum Pluspol.</label>
+      <label><input type="radio" name="q3" value="b"> Strom fließt vom Plus- zum Minuspol.</label>
+      <label><input type="radio" name="q3" value="c"> Elektronen fließen vom Plus- zum Minuspol.</label>
+      <label><input type="radio" name="q3" value="d"> Stromrichtung und Elektronenbewegung sind identisch.</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(3,'q3','b')">Prüfen</button>
+      <button onclick="resetUI(3)">Zurücksetzen</button>
+    </div>
+    <div id="f3" class="feedback"></div>
+    <button id="sb3" class="solutionBtn" onclick="toggleSolution(3)">Lösungsweg anzeigen</button>
+    <div id="sol3" class="solution">
+      <h3>Lösung (Aufgabe 3)</h3>
+      <div class="small">
+        Die <b>technische Stromrichtung</b> ist definitionsgemäß von <b>Plus nach Minus</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section class="task" data-task="4">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">4</div>
+        <div>
+          <p class="tTitle"><b>Welche Bauteile brauchst du, um einen einfachen Stromkreis aufzubauen?</b></p>
+          <div class="prompt">Mehrfachauswahl (4 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q4">
+      <label><input type="checkbox" name="q4" value="a"> Batterie</label>
+      <label><input type="checkbox" name="q4" value="b"> Lampe</label>
+      <label><input type="checkbox" name="q4" value="c"> Schalter</label>
+      <label><input type="checkbox" name="q4" value="d"> Kabel/Leitungen</label>
+      <label><input type="checkbox" name="q4" value="e"> Sicherung</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkMulti(4,'q4',['a','b','c','d'])">Prüfen</button>
+      <button onclick="resetUI(4)">Zurücksetzen</button>
+    </div>
+    <div id="f4" class="feedback"></div>
+    <button id="sb4" class="solutionBtn" onclick="toggleSolution(4)">Lösungsweg anzeigen</button>
+    <div id="sol4" class="solution">
+      <h3>Lösung (Aufgabe 4)</h3>
+      <div class="small">
+        Minimal brauchst du: <b>Batterie</b>, <b>Lampe</b>, <b>Schalter</b> und <b>Leitungen</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section class="task" data-task="5">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">5</div>
+        <div>
+          <p class="tTitle"><b>Welche Aussage gilt nur für die Reihenschaltung?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q5">
+      <label><input type="radio" name="q5" value="a"> Fällt ein Verbraucher aus, funktionieren alle anderen weiter.</label>
+      <label><input type="radio" name="q5" value="b"> Fällt ein Verbraucher aus, funktioniert keiner mehr.</label>
+      <label><input type="radio" name="q5" value="c"> Alle Verbraucher sind direkt an die Spannungsquelle angeschlossen.</label>
+      <label><input type="radio" name="q5" value="d"> Schalter wirken unabhängig voneinander auf verschiedene Verbraucher.</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(5,'q5','b')">Prüfen</button>
+      <button onclick="resetUI(5)">Zurücksetzen</button>
+    </div>
+    <div id="f5" class="feedback"></div>
+    <button id="sb5" class="solutionBtn" onclick="toggleSolution(5)">Lösungsweg anzeigen</button>
+    <div id="sol5" class="solution">
+      <h3>Lösung (Aufgabe 5)</h3>
+      <div class="small">
+        In der <b>Reihenschaltung</b> ist der Stromkreis eine „Kette“. Fällt ein Bauteil aus, ist der Kreis unterbrochen.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section class="task" data-task="6">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">6</div>
+        <div>
+          <p class="tTitle"><b>Zwei identische Lampen: einmal in Reihe, einmal parallel an derselben Batterie. Welche Beobachtung stimmt?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q6">
+      <label><input type="radio" name="q6" value="a"> In Reihenschaltung leuchten beide Lampen schwächer.</label>
+      <label><input type="radio" name="q6" value="b"> In Reihenschaltung leuchtet nur eine Lampe.</label>
+      <label><input type="radio" name="q6" value="c"> In Parallelschaltung leuchten beide Lampen unterschiedlich.</label>
+      <label><input type="radio" name="q6" value="d"> In beiden Schaltungen leuchten die Lampen gleich.</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(6,'q6','a')">Prüfen</button>
+      <button onclick="resetUI(6)">Zurücksetzen</button>
+    </div>
+    <div id="f6" class="feedback"></div>
+    <button id="sb6" class="solutionBtn" onclick="toggleSolution(6)">Lösungsweg anzeigen</button>
+    <div id="sol6" class="solution">
+      <h3>Lösung (Aufgabe 6)</h3>
+      <div class="small">
+        In der <b>Reihenschaltung</b> sind die Lampen typischerweise <b>schwächer</b>, weil der Stromkreis „geteilt“ wirkt.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 7 ===================== -->
+  <section class="task" data-task="7">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">7</div>
+        <div>
+          <p class="tTitle"><b>Parallelschaltung: Eine Lampe wird ausgeschaltet/unterbrochen. Was passiert?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q7">
+      <label><input type="radio" name="q7" value="a"> Beide Lampen gehen aus.</label>
+      <label><input type="radio" name="q7" value="b"> Die andere Lampe bleibt an.</label>
+      <label><input type="radio" name="q7" value="c"> Der Stromkreis ist immer vollständig unterbrochen.</label>
+      <label><input type="radio" name="q7" value="d"> Die Batterie wird sofort leer.</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(7,'q7','b')">Prüfen</button>
+      <button onclick="resetUI(7)">Zurücksetzen</button>
+    </div>
+    <div id="f7" class="feedback"></div>
+    <button id="sb7" class="solutionBtn" onclick="toggleSolution(7)">Lösungsweg anzeigen</button>
+    <div id="sol7" class="solution">
+      <h3>Lösung (Aufgabe 7)</h3>
+      <div class="small">
+        In der <b>Parallelschaltung</b> hat jeder Verbraucher seinen eigenen Zweig → die andere Lampe bleibt an.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 8 ===================== -->
+  <section class="task" data-task="8">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">8</div>
+        <div>
+          <p class="tTitle"><b>Lampe soll nur leuchten, wenn zwei Schalter gleichzeitig geschlossen sind. Welche Schalter-Schaltung?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q8">
+      <label><input type="radio" name="q8" value="a"> Reihenschaltung der Schalter (UND)</label>
+      <label><input type="radio" name="q8" value="b"> Parallelschaltung der Schalter (ODER)</label>
+      <label><input type="radio" name="q8" value="c"> Reihenschaltung der Lampen</label>
+      <label><input type="radio" name="q8" value="d"> Parallelschaltung der Batterie</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(8,'q8','a')">Prüfen</button>
+      <button onclick="resetUI(8)">Zurücksetzen</button>
+    </div>
+    <div id="f8" class="feedback"></div>
+    <button id="sb8" class="solutionBtn" onclick="toggleSolution(8)">Lösungsweg anzeigen</button>
+    <div id="sol8" class="solution">
+      <h3>Lösung (Aufgabe 8)</h3>
+      <div class="small">
+        UND bedeutet: beide Bedingungen müssen erfüllt sein → Schalter in <b>Reihe</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 9 ===================== -->
+  <section class="task" data-task="9">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">9</div>
+        <div>
+          <p class="tTitle"><b>Lampe soll leuchten, wenn mindestens einer von zwei Schaltern geschlossen ist. Welche Schalter-Schaltung?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q9">
+      <label><input type="radio" name="q9" value="a"> Schalter in Reihe (UND)</label>
+      <label><input type="radio" name="q9" value="b"> Schalter parallel (ODER)</label>
+      <label><input type="radio" name="q9" value="c"> Lampe in Reihe schalten</label>
+      <label><input type="radio" name="q9" value="d"> Sicherung einbauen</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(9,'q9','b')">Prüfen</button>
+      <button onclick="resetUI(9)">Zurücksetzen</button>
+    </div>
+    <div id="f9" class="feedback"></div>
+    <button id="sb9" class="solutionBtn" onclick="toggleSolution(9)">Lösungsweg anzeigen</button>
+    <div id="sol9" class="solution">
+      <h3>Lösung (Aufgabe 9)</h3>
+      <div class="small">
+        ODER bedeutet: mindestens eine Bedingung reicht → Schalter <b>parallel</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 10 ===================== -->
+  <section class="task" data-task="10">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">10</div>
+        <div>
+          <p class="tTitle"><b>Welche Anwendung entspricht am ehesten einer UND-Schaltung?</b></p>
+          <div class="prompt">Einfachauswahl (1 richtig)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mc" data-shuffle="q10">
+      <label><input type="radio" name="q10" value="a"> Flurlicht mit zwei Schaltern</label>
+      <label><input type="radio" name="q10" value="b"> Sicherheitsabdeckung <b>und</b> Startknopf einer Maschine</label>
+      <label><input type="radio" name="q10" value="c"> Mehrfachsteckdose</label>
+      <label><input type="radio" name="q10" value="d"> Fahrradbeleuchtung (Dynamo)</label>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkSingle(10,'q10','b')">Prüfen</button>
+      <button onclick="resetUI(10)">Zurücksetzen</button>
+    </div>
+    <div id="f10" class="feedback"></div>
+    <button id="sb10" class="solutionBtn" onclick="toggleSolution(10)">Lösungsweg anzeigen</button>
+    <div id="sol10" class="solution">
+      <h3>Lösung (Aufgabe 10)</h3>
+      <div class="small">
+        UND-Schaltung: Nur wenn <b>beide</b> Bedingungen erfüllt sind, passiert etwas (Abdeckung zu <b>und</b> Start gedrückt).
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 11 SKIZZE ===================== -->
+  <section class="task" data-task="11" data-nograde="1">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">11</div>
+        <div>
+          <p class="tTitle"><b>Schaltskizze (3 Schalter): Lampe leuchtet, wenn A geschlossen ist UND (B ODER C) geschlossen ist.</b></p>
+          <div class="prompt">Skizziere Batterie, Glühlampe und Schalter A, B, C. (Freies Zeichnen im Raster)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sketchWrap">
+      <div class="mini">Skizzierfeld (Raster). Wird nicht mitgesendet.</div>
+      <canvas class="sketch" id="sketch11" width="1200" height="525"></canvas>
+      <div class="sketchBar">
+        <button onclick="clearSketch(11)">Skizze löschen</button>
+        <button onclick="markDone(11)">Als erledigt markieren</button>
+      </div>
+    </div>
+
+    <div id="f11" class="feedback"></div>
+    <button id="sb11" class="solutionBtn" onclick="toggleSolution(11)">Lösungsweg anzeigen</button>
+    <div id="sol11" class="solution">
+      <h3>Musterlösung (Aufgabe 11)</h3>
+      <div class="small">A in Reihe mit einer Parallelschaltung aus B und C.</div>
+    </div>
+  </section>
+
+  <!-- ===================== 12 SKIZZE ===================== -->
+  <section class="task" data-task="12" data-nograde="1">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">12</div>
+        <div>
+          <p class="tTitle"><b>Schaltskizze (4 Schalter): (S1 UND S2) UND (S3 ODER S4)</b></p>
+          <div class="prompt">Skizziere Batterie, Glühlampe und Schalter S1–S4. (Freies Zeichnen im Raster)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sketchWrap">
+      <div class="mini">Skizzierfeld (Raster). Wird nicht mitgesendet.</div>
+      <canvas class="sketch" id="sketch12" width="1200" height="600"></canvas>
+      <div class="sketchBar">
+        <button onclick="clearSketch(12)">Skizze löschen</button>
+        <button onclick="markDone(12)">Als erledigt markieren</button>
+      </div>
+    </div>
+
+    <div id="f12" class="feedback"></div>
+    <button id="sb12" class="solutionBtn" onclick="toggleSolution(12)">Lösungsweg anzeigen</button>
+    <div id="sol12" class="solution">
+      <h3>Musterlösung (Aufgabe 12)</h3>
+      <div class="small">S1 und S2 in Reihe, danach Parallelschaltung aus S3 und S4.</div>
+    </div>
+  </section>
+
+    <!-- ===================== 13 Äquivalenzumformung 1 ===================== -->
+  <section class="task" data-task="13">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">13</div>
+        <div>
+          <p class="tTitle"><b>Äquivalenzumformung 1:</b> Stelle um: \(F=m\cdot a\) nach \(a\).</p>
+          <div class="prompt">1) Ergebnis wählen &nbsp;|&nbsp; 2) Umformung benennen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card2">
+      <div class="eqRow">
+        <div class="eqLabel">Ergebnis:</div>
+        <select class="eqSelect" name="eq13_res">
+          <option value="">– auswählen –</option>
+          <option value="a=F/m">a = F / m</option>
+          <option value="a=F*m">a = F · m</option>
+          <option value="a=m/F">a = m / F</option>
+          <option value="a=F-m">a = F − m</option>
+        </select>
+      </div>
+      <div id="eq13_prev_res" class="eqPreview">
+        <div class="pTitle">Anzeige (Ergebnis als Formel)</div>
+        <div class="pMath"></div>
+      </div>
+
+      <div class="eqRow">
+        <div class="eqLabel">Umformung:</div>
+        <select class="eqSelect" name="eq13_step">
+          <option value="">– auswählen –</option>
+          <option value="div_m">÷ m</option>
+          <option value="mul_m">· m</option>
+          <option value="add_m">+ m</option>
+          <option value="sub_m">− m</option>
+        </select>
+      </div>
+      <div id="eq13_prev_step" class="eqPreview">
+        <div class="pTitle">Anzeige (Umformung)</div>
+        <div class="pMath"></div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkEq(13, {res:'a=F/m', step:'div_m'}, ['eq13_res','eq13_step'])">Prüfen</button>
+      <button onclick="resetUI(13)">Zurücksetzen</button>
+    </div>
+
+    <div id="f13" class="feedback"></div>
+    <button id="sb13" class="solutionBtn" onclick="toggleSolution(13)">Lösungsweg anzeigen</button>
+    <div id="sol13" class="solution">
+      <h3>Lösung (Aufgabe 13)</h3>
+      <div class="small">
+        \(F=m\cdot a\) &nbsp;|&nbsp; Division durch \(m\)<br>
+        \(\Rightarrow a=\frac{F}{m}\)
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 14 Äquivalenzumformung 2 ===================== -->
+  <section class="task" data-task="14">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">14</div>
+        <div>
+          <p class="tTitle"><b>Äquivalenzumformung 2:</b> Stelle um: \(U=R\cdot I\) nach \(I\).</p>
+          <div class="prompt">1) Ergebnis wählen &nbsp;|&nbsp; 2) Umformung benennen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card2">
+      <div class="eqRow">
+        <div class="eqLabel">Ergebnis:</div>
+        <select class="eqSelect" name="eq14_res">
+          <option value="">– auswählen –</option>
+          <option value="I=U/R">I = U / R</option>
+          <option value="I=U*R">I = U · R</option>
+          <option value="I=R/U">I = R / U</option>
+          <option value="I=U-R">I = U − R</option>
+        </select>
+      </div>
+      <div id="eq14_prev_res" class="eqPreview">
+        <div class="pTitle">Anzeige (Ergebnis als Formel)</div>
+        <div class="pMath"></div>
+      </div>
+
+      <div class="eqRow">
+        <div class="eqLabel">Umformung:</div>
+        <select class="eqSelect" name="eq14_step">
+          <option value="">– auswählen –</option>
+          <option value="div_R">÷ R</option>
+          <option value="mul_R">· R</option>
+          <option value="add_R">+ R</option>
+          <option value="inv">Kehrwert</option>
+        </select>
+      </div>
+      <div id="eq14_prev_step" class="eqPreview">
+        <div class="pTitle">Anzeige (Umformung)</div>
+        <div class="pMath"></div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkEq(14, {res:'I=U/R', step:'div_R'}, ['eq14_res','eq14_step'])">Prüfen</button>
+      <button onclick="resetUI(14)">Zurücksetzen</button>
+    </div>
+
+    <div id="f14" class="feedback"></div>
+    <button id="sb14" class="solutionBtn" onclick="toggleSolution(14)">Lösungsweg anzeigen</button>
+    <div id="sol14" class="solution">
+      <h3>Lösung (Aufgabe 14)</h3>
+      <div class="small">
+        \(U=R\cdot I\) &nbsp;|&nbsp; Division durch \(R\)<br>
+        \(\Rightarrow I=\frac{U}{R}\)
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 15 Äquivalenzumformung 3 ===================== -->
+  <section class="task" data-task="15">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">15</div>
+        <div>
+          <p class="tTitle"><b>Äquivalenzumformung 3:</b> Stelle um: \(p=\frac{F}{A}\) nach \(A\).</p>
+          <div class="prompt">1) Ergebnis wählen &nbsp;|&nbsp; 2) Umformung benennen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card2">
+      <div class="eqRow">
+        <div class="eqLabel">Ergebnis:</div>
+        <select class="eqSelect" name="eq15_res">
+          <option value="">– auswählen –</option>
+          <option value="A=F/p">A = F / p</option>
+          <option value="A=p/F">A = p / F</option>
+          <option value="A=F*p">A = F · p</option>
+          <option value="A=F-p">A = F − p</option>
+        </select>
+      </div>
+      <div id="eq15_prev_res" class="eqPreview">
+        <div class="pTitle">Anzeige (Ergebnis als Formel)</div>
+        <div class="pMath"></div>
+      </div>
+
+      <div class="eqRow">
+        <div class="eqLabel">Umformung:</div>
+        <select class="eqSelect" name="eq15_step">
+          <option value="">– auswählen –</option>
+          <option value="mul_A">· A</option>
+          <option value="div_p">÷ p</option>
+          <option value="mul_p">· p</option>
+          <option value="sub_p">− p</option>
+        </select>
+      </div>
+      <div id="eq15_prev_step" class="eqPreview">
+        <div class="pTitle">Anzeige (Umformung)</div>
+        <div class="pMath"></div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkEq(15, {res:'A=F/p', step:'div_p'}, ['eq15_res','eq15_step'])">Prüfen</button>
+      <button onclick="resetUI(15)">Zurücksetzen</button>
+    </div>
+
+    <div id="f15" class="feedback"></div>
+    <button id="sb15" class="solutionBtn" onclick="toggleSolution(15)">Lösungsweg anzeigen</button>
+    <div id="sol15" class="solution">
+      <h3>Lösung (Aufgabe 15)</h3>
+      <div class="small">
+        \(p=\frac{F}{A}\) ⇒ \(p\cdot A=F\) &nbsp;|&nbsp; Division durch \(p\)<br>
+        \(\Rightarrow A=\frac{F}{p}\)
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 16 Äquivalenzumformung 4 ===================== -->
+  <section class="task" data-task="16">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">16</div>
+        <div>
+          <p class="tTitle"><b>Äquivalenzumformung 4:</b> Stelle um: \(E=P\cdot t\) nach \(P\).</p>
+          <div class="prompt">1) Ergebnis wählen &nbsp;|&nbsp; 2) Umformung benennen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card2">
+      <div class="eqRow">
+        <div class="eqLabel">Ergebnis:</div>
+        <select class="eqSelect" name="eq16_res">
+          <option value="">– auswählen –</option>
+          <option value="P=E/t">P = E / t</option>
+          <option value="P=E*t">P = E · t</option>
+          <option value="P=t/E">P = t / E</option>
+          <option value="P=E-t">P = E − t</option>
+        </select>
+      </div>
+      <div id="eq16_prev_res" class="eqPreview">
+        <div class="pTitle">Anzeige (Ergebnis als Formel)</div>
+        <div class="pMath"></div>
+      </div>
+
+      <div class="eqRow">
+        <div class="eqLabel">Umformung:</div>
+        <select class="eqSelect" name="eq16_step">
+          <option value="">– auswählen –</option>
+          <option value="div_t">÷ t</option>
+          <option value="mul_t">· t</option>
+          <option value="sub_t">− t</option>
+          <option value="add_t">+ t</option>
+        </select>
+      </div>
+      <div id="eq16_prev_step" class="eqPreview">
+        <div class="pTitle">Anzeige (Umformung)</div>
+        <div class="pMath"></div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkEq(16, {res:'P=E/t', step:'div_t'}, ['eq16_res','eq16_step'])">Prüfen</button>
+      <button onclick="resetUI(16)">Zurücksetzen</button>
+    </div>
+
+    <div id="f16" class="feedback"></div>
+    <button id="sb16" class="solutionBtn" onclick="toggleSolution(16)">Lösungsweg anzeigen</button>
+    <div id="sol16" class="solution">
+      <h3>Lösung (Aufgabe 16)</h3>
+      <div class="small">
+        \(E=P\cdot t\) &nbsp;|&nbsp; Division durch \(t\)<br>
+        \(\Rightarrow P=\frac{E}{t}\)
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 17 Äquivalenzumformung 5 ===================== -->
+  <section class="task" data-task="17">
+    <div class="taskHead">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <div class="nr">17</div>
+        <div>
+          <p class="tTitle"><b>Äquivalenzumformung 5:</b> Stelle um: \(\rho=\frac{m}{V}\) nach \(m\).</p>
+          <div class="prompt">1) Ergebnis wählen &nbsp;|&nbsp; 2) Umformung benennen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card2">
+      <div class="eqRow">
+        <div class="eqLabel">Ergebnis:</div>
+        <select class="eqSelect" name="eq17_res">
+          <option value="">– auswählen –</option>
+          <option value="m=rho*V">m = ρ · V</option>
+          <option value="m=V/rho">m = V / ρ</option>
+          <option value="m=rho/V">m = ρ / V</option>
+          <option value="m=rho-V">m = ρ − V</option>
+        </select>
+      </div>
+      <div id="eq17_prev_res" class="eqPreview">
+        <div class="pTitle">Anzeige (Ergebnis als Formel)</div>
+        <div class="pMath"></div>
+      </div>
+
+      <div class="eqRow">
+        <div class="eqLabel">Umformung:</div>
+        <select class="eqSelect" name="eq17_step">
+          <option value="">– auswählen –</option>
+          <option value="mul_V">· V</option>
+          <option value="div_V">÷ V</option>
+          <option value="mul_rho">· ρ</option>
+          <option value="div_rho">÷ ρ</option>
+        </select>
+      </div>
+      <div id="eq17_prev_step" class="eqPreview">
+        <div class="pTitle">Anzeige (Umformung)</div>
+        <div class="pMath"></div>
+      </div>
+    </div>
+
+    <div class="btnrow">
+      <button onclick="checkEq(17, {res:'m=rho*V', step:'mul_V'}, ['eq17_res','eq17_step'])">Prüfen</button>
+      <button onclick="resetUI(17)">Zurücksetzen</button>
+    </div>
+
+    <div id="f17" class="feedback"></div>
+    <button id="sb17" class="solutionBtn" onclick="toggleSolution(17)">Lösungsweg anzeigen</button>
+    <div id="sol17" class="solution">
+      <h3>Lösung (Aufgabe 17)</h3>
+      <div class="small">
+        \(\rho=\frac{m}{V}\) &nbsp;|&nbsp; Multiplikation mit \(V\)<br>
+        \(\Rightarrow \rho\cdot V = m\) &nbsp;→&nbsp; \(m=\rho V\)
+      </div>
+    </div>
+  </section>
+
+
+</div>
+
+<script>
+/* ==================== KONFIG (fest) ==================== */
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwNSC_7Jbv7j-NZpVHpWH41R-E97eVqg6BYLHI5N-Cn9cb7iGWHmiXiJk3RciO2gbM8XQ/exec";
+const COURSE_NAME = "Physik 8a";
+const SHEET_ID = "Der Stromkreis";
+const STORE_KEY = "hbl_physik8a_stromkreis_v2_eq";
+
+/* ==================== STATE ==================== */
+const attempted = {};
+const firstCorrect = {};
+const wrongStreak = {};
+const solutionUnlocked = {};
+const feedbackCache = {};
+const sketchDone = {};
+let seed = null;
+
+let studentName = "";
+let startedAtISO = null;
+let lastSent = null;
+
+/* ==================== SAVE/LOAD ==================== */
+function saveState(){
+  const data = {
+    seed, studentName, startedAtISO, lastSent,
+    attempted, firstCorrect, wrongStreak, solutionUnlocked, feedbackCache, sketchDone,
+    inputs: snapshotInputs(),
+    selects: snapshotSelects(),
+    sketches: snapshotSketches()
+  };
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(e){}
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+let saveTimer=null;
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveState,120);
+}
+function snapshotInputs(){
+  const result = {};
+  const names = new Set([...document.querySelectorAll('input[name]')].map(i=>i.name));
+  for(const n of names){
+    const checked = [...document.querySelectorAll('input[name="'+n+'"]:checked')].map(x=>x.value).sort();
+    result[n]=checked;
+  }
+  return result;
+}
+function snapshotSelects(){
+  const result = {};
+  document.querySelectorAll('select[name]').forEach(s=>result[s.name]=s.value);
+  return result;
+}
+function applyInputs(saved){
+  if(!saved) return;
+  for(const [name, arr] of Object.entries(saved)){
+    const set = new Set(arr||[]);
+    document.querySelectorAll('input[name="'+name+'"]').forEach(inp=>{
+      inp.checked = set.has(inp.value);
+    });
+  }
+}
+function applySelects(saved){
+  if(!saved) return;
+  for(const [name,val] of Object.entries(saved)){
+    const sel = document.querySelector('select[name="'+name+'"]');
+    if(sel) sel.value = val;
+  }
+}
+function applyFeedback(){
+  for(const [k,v] of Object.entries(feedbackCache)){
+    const n = Number(k);
+    const el = document.getElementById('f'+n);
+    if(el && v && typeof v.text==="string"){
+      el.textContent = v.text;
+      el.className = 'feedback ' + (v.okClass||'');
+    }
+  }
+  for(const [k,unlocked] of Object.entries(solutionUnlocked)){
+    const n = Number(k);
+    if(unlocked){
+      const b = document.getElementById('sb'+n);
+      if(b) b.style.display='inline-block';
+    }
+  }
+}
+function attachAutoSave(){
+  document.querySelectorAll('input, select').forEach(el=>{
+    el.addEventListener('change', scheduleSave);
+    el.addEventListener('input', scheduleSave);
+  });
+}
+
+/* ==================== SHUFFLE (pro Gerät) ==================== */
+function mulberry32(a){
+  return function(){
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+}
+function ensureSeed(){
+  const st=loadState();
+  if(st && typeof st.seed==="number"){ seed=st.seed; return; }
+  seed = Math.floor(Math.random()*1e9);
+  saveState();
+}
+function shuffleArray(arr, rnd){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(rnd()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+function shuffleMCBlocks(){
+  const blocks = document.querySelectorAll('.mc[data-shuffle]');
+  blocks.forEach((block, idx)=>{
+    const rnd = mulberry32((seed + 1013*(idx+1))>>>0);
+    const labels = [...block.querySelectorAll('label')];
+    shuffleArray(labels, rnd);
+    labels.forEach(l=>block.appendChild(l));
+  });
+}
+function shuffleSelectOptions(){
+  const selects = document.querySelectorAll('select[name]');
+  selects.forEach((sel, idx)=>{
+    const opts=[...sel.querySelectorAll('option')];
+    if(opts.length<=2) return;
+    const placeholder=opts[0];
+    const rest=opts.slice(1);
+    const rnd = mulberry32((seed + 7919*(idx+1))>>>0);
+    shuffleArray(rest, rnd);
+    sel.innerHTML="";
+    sel.appendChild(placeholder);
+    rest.forEach(o=>sel.appendChild(o));
+  });
+}
+
+/* ==================== NAME / SEND BTN ==================== */
+function updateSendBtn(){
+  const btn=document.getElementById('sendBtn');
+  studentName = (document.getElementById('studentName').value||"").trim();
+  btn.disabled = (studentName.length===0);
+  scheduleSave();
+}
+
+/* ==================== SCORE ==================== */
+function isNoGradeTask(n){
+  const sec=document.querySelector('section[data-task="'+n+'"]');
+  return !!(sec && sec.getAttribute('data-nograde')==="1");
+}
+function computeDetail(){
+  const totalTasks = 17;
+  let gradableTotal = 0;
+  let correctFirst = 0;
+  let attemptedCount = 0;
+
+  const firstCorrectTasks = [];
+  const firstWrongTasks = [];
+  const sketchDoneTasks = [];
+
+  for(let i=1;i<=totalTasks;i++){
+    if(isNoGradeTask(i)){
+      if(sketchDone[i]) sketchDoneTasks.push(i);
+      continue;
+    }
+    gradableTotal++;
+    if(attempted[i]){
+      attemptedCount++;
+      if(firstCorrect[i]){
+        correctFirst++;
+        firstCorrectTasks.push(i);
+      }else{
+        firstWrongTasks.push(i);
+      }
+    }
+  }
+  return {
+    totalTasks, gradableTotal, correctFirst, attemptedCount,
+    scoreStr: correctFirst + "/" + gradableTotal,
+    firstCorrectTasks, firstWrongTasks, sketchDoneTasks
+  };
+}
+
+/* ==================== SEND (wie Kondensator) ==================== */
+function showSentOk(detail){
+  lastSent = { name: studentName, course: COURSE_NAME, sheetId: SHEET_ID, score: detail.scoreStr, ts: new Date().toISOString() };
+  const s=document.getElementById('score');
+  s.className='feedback ok';
+  s.textContent =
+    "Gesendet ✅ (" + studentName +
+    " | " + COURSE_NAME +
+    " | " + SHEET_ID +
+    " | Score: " + detail.scoreStr +
+    " | Erstversuch richtig: [" + detail.firstCorrectTasks.join(",") + "]" +
+    " | Erstversuch falsch: [" + detail.firstWrongTasks.join(",") + "]" +
+    " | Skizzen erledigt: [" + detail.sketchDoneTasks.join(",") + "]" +
+    ")";
+  scheduleSave();
+}
+function showSentFail(msg){
+  const s=document.getElementById('score');
+  s.className='feedback bad';
+  s.textContent="Senden fehlgeschlagen ❌ ("+msg+")";
+  scheduleSave();
+}
+async function sendResults(){
+  if(!WEBAPP_URL){ showSentFail("WEBAPP_URL ist leer."); return; }
+
+  const name=(document.getElementById('studentName').value||"").trim();
+  if(!name){
+    const s=document.getElementById('score');
+    s.className='feedback bad';
+    s.textContent="Bitte zuerst den Namen eintragen.";
+    return;
+  }
+
+  const detail = computeDetail();
+
+  const sentAtISO = new Date().toISOString();
+  const startedAt = startedAtISO ? new Date(startedAtISO) : new Date();
+  const sentAt = new Date(sentAtISO);
+  const workTimeSec = Math.max(0, Math.round((sentAt.getTime()-startedAt.getTime())/1000));
+
+  const payload = {
+    name: name,
+    classCode: COURSE_NAME,
+    sheetId: SHEET_ID,
+
+    score: detail.scoreStr,
+    attemptedCount: detail.attemptedCount,
+    firstCorrectTasks: detail.firstCorrectTasks.join(","),
+    firstWrongTasks: detail.firstWrongTasks.join(","),
+
+    startedAt: startedAtISO,
+    sentAt: sentAtISO,
+    workTimeSec: workTimeSec,
+
+    ua: navigator.userAgent
+  };
+
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true;
+
+  try{
+    await fetch(WEBAPP_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+    showSentOk(detail);
+  }catch(e){
+    showSentFail(String(e));
+  }finally{
+    setTimeout(updateSendBtn, 700);
+  }
+}
+
+/* ==================== CHECK-LOGIK ==================== */
+function ensureInit(n){
+  if(!(n in wrongStreak)) wrongStreak[n]=0;
+  if(!(n in solutionUnlocked)) solutionUnlocked[n]=false;
+}
+function cacheFeedback(n, ok, msg){
+  feedbackCache[n]={ text: msg, okClass: ok ? 'ok':'bad' };
+}
+function setNeedAnswer(n){
+  const el=document.getElementById('f'+n);
+  el.className='feedback bad';
+  el.textContent='Bitte wähle zuerst eine Antwort aus.';
+  cacheFeedback(n,false,el.textContent);
+  scheduleSave();
+}
+function unlockSolution(n){
+  solutionUnlocked[n]=true;
+  const b=document.getElementById('sb'+n);
+  if(b) b.style.display='inline-block';
+}
+function setFeedback(n, ok, isFirst, msg){
+  const el=document.getElementById('f'+n);
+  el.className='feedback '+(ok?'ok':'bad');
+  let text = msg ?? (ok?'Richtig ✅':'Falsch ❌');
+  if(!isFirst && !isNoGradeTask(n)) text += '  (Wertung bereits festgelegt)';
+  el.textContent=text;
+  cacheFeedback(n, ok, text);
+  scheduleSave();
+}
+function getChecked(name){
+  return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(x=>x.value).sort();
+}
+function afterCheck(n, ok){
+  ensureInit(n);
+  if(ok){
+    wrongStreak[n]=0;
+    unlockSolution(n);
+  }else{
+    wrongStreak[n]+=1;
+    if(wrongStreak[n]>=3) unlockSolution(n);
+  }
+  scheduleSave();
+}
+function checkSingle(n, name, correct){
+  const chosen=getChecked(name);
+  if(chosen.length===0){ setNeedAnswer(n); return; }
+  const ok=(chosen.length===1 && chosen[0]===correct);
+
+  const isFirst = !(n in attempted);
+  if(isFirst){ attempted[n]=true; firstCorrect[n]=ok; }
+
+  setFeedback(n, ok, isFirst, ok?'Richtig ✅':'Falsch ❌');
+  afterCheck(n, ok);
+  if(solutionUnlocked[n] && window.MathJax) MathJax.typesetPromise();
+  saveState();
+}
+function checkMulti(n, name, correct){
+  const chosen=getChecked(name);
+  if(chosen.length===0){ setNeedAnswer(n); return; }
+
+  const correctSet=new Set(correct);
+  let right=0;
+  for(const v of chosen){ if(correctSet.has(v)) right++; }
+  const wrong = chosen.length - right;
+  const missing = correct.length - right;
+  const ok = (wrong===0 && missing===0);
+
+  const isFirst = !(n in attempted);
+  if(isFirst){ attempted[n]=true; firstCorrect[n]=ok; }
+
+  let msg='';
+  if(ok) msg='Richtig ✅';
+  else{
+    msg='Teilweise: '+right+' richtig, '+wrong+' falsch';
+    if(missing>0) msg+=', '+missing+' fehlt/fehlen';
+    msg+='.';
+  }
+
+  setFeedback(n, ok, isFirst, msg);
+  afterCheck(n, ok);
+  if(solutionUnlocked[n] && window.MathJax) MathJax.typesetPromise();
+  saveState();
+}
+function checkMatch(n, key, names){
+  const values = names.map(x => document.querySelector('select[name="'+x+'"]').value);
+  if(values.some(v=>v==='')){
+    const el=document.getElementById('f'+n);
+    el.className='feedback bad';
+    el.textContent='Bitte fülle alle Zuordnungen aus.';
+    cacheFeedback(n,false,el.textContent);
+    scheduleSave();
+    return;
+  }
+
+  let okCount=0;
+  if(values[0]===key.m1) okCount++;
+  if(values[1]===key.m2) okCount++;
+  if(values[2]===key.m3) okCount++;
+  if(values[3]===key.m4) okCount++;
+
+  const ok=(okCount===4);
+
+  const isFirst = !(n in attempted);
+  if(isFirst){ attempted[n]=true; firstCorrect[n]=ok; }
+
+  setFeedback(n, ok, isFirst, ok ? 'Richtig ✅' : ('Teilweise richtig: '+okCount+' / 4 korrekt.'));
+  afterCheck(n, ok);
+  if(solutionUnlocked[n] && window.MathJax) MathJax.typesetPromise();
+  saveState();
+}
+
+/* ====== Äquivalenzumformung (neu) ====== */
+function checkEq(n, key, names){
+  const res = document.querySelector('select[name="'+names[0]+'"]').value;
+  const step = document.querySelector('select[name="'+names[1]+'"]').value;
+
+  if(res==='' || step===''){
+    const el=document.getElementById('f'+n);
+    el.className='feedback bad';
+    el.textContent='Bitte wähle Ergebnis und Umformung aus.';
+    cacheFeedback(n,false,el.textContent);
+    scheduleSave();
+    return;
+  }
+
+  const ok = (res===key.res && step===key.step);
+
+  const isFirst = !(n in attempted);
+  if(isFirst){ attempted[n]=true; firstCorrect[n]=ok; }
+
+  setFeedback(n, ok, isFirst, ok ? 'Richtig ✅' : 'Falsch ❌');
+  afterCheck(n, ok);
+  if(solutionUnlocked[n] && window.MathJax) MathJax.typesetPromise();
+  saveState();
+}
+function checkEq2(n, key, names){
+  const res = document.querySelector('select[name="'+names[0]+'"]').value;
+  const s1  = document.querySelector('select[name="'+names[1]+'"]').value;
+  const s2  = document.querySelector('select[name="'+names[2]+'"]').value;
+
+  if(res==='' || s1==='' || s2===''){
+    const el=document.getElementById('f'+n);
+    el.className='feedback bad';
+    el.textContent='Bitte Ergebnis und beide Umformungsschritte auswählen.';
+    cacheFeedback(n,false,el.textContent);
+    scheduleSave();
+    return;
+  }
+
+  const ok = (res===key.res && s1===key.s1 && s2===key.s2);
+
+  const isFirst = !(n in attempted);
+  if(isFirst){ attempted[n]=true; firstCorrect[n]=ok; }
+
+  setFeedback(n, ok, isFirst, ok ? 'Richtig ✅' : 'Falsch ❌');
+  afterCheck(n, ok);
+  if(solutionUnlocked[n] && window.MathJax) MathJax.typesetPromise();
+  saveState();
+}
+
+/* ==================== RESET / INFO ==================== */
+function resetUI(n){
+  const sec=document.querySelector('section[data-task="'+n+'"]');
+  if(!sec) return;
+  sec.querySelectorAll('input').forEach(i=>i.checked=false);
+  sec.querySelectorAll('select').forEach(s=>s.value='');
+
+  const f=document.getElementById('f'+n);
+  if(f){ f.textContent=''; f.className='feedback'; }
+  delete feedbackCache[n];
+  scheduleSave();
+}
+function toggleSolution(n){
+  const sol=document.getElementById('sol'+n);
+  if(!sol) return;
+  sol.style.display = (sol.style.display==='block') ? 'none' : 'block';
+  if(window.MathJax) MathJax.typesetPromise();
+}
+function showScore(){
+  const d=computeDetail();
+  const s=document.getElementById('score');
+  s.className='feedback';
+  s.textContent =
+    "Kurs: "+COURSE_NAME+" | Arbeitsblatt: "+SHEET_ID+" | " +
+    "Score (nur automatisch): "+d.scoreStr+
+    " (geprüft: "+d.attemptedCount+" / "+d.gradableTotal+")" +
+    " | Richtig: ["+d.firstCorrectTasks.join(",")+"]" +
+    " | Falsch: ["+d.firstWrongTasks.join(",")+"]" +
+    " | Skizzen erledigt: ["+d.sketchDoneTasks.join(",")+"]";
+  scheduleSave();
+}
+function showInfo(){
+  const lines=[];
+  lines.push("• Mitgesendet: Name, Kurs, Arbeitsblatt-ID, Score, attemptedCount, Erstversuch-Listen, Startzeit, Sendezeit, Arbeitszeit, UserAgent.");
+  lines.push("• Kurs: "+COURSE_NAME);
+  lines.push("• Arbeitsblatt: "+SHEET_ID);
+  if(startedAtISO) lines.push("• Startzeit: "+startedAtISO);
+  if(lastSent && lastSent.ts) lines.push("• Letztes Senden: "+lastSent.ts);
+  document.getElementById('info').textContent = lines.join("  ");
+}
+
+/* ==================== SKIZZE (Canvas) ==================== */
+function drawGrid(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,w,h);
+
+  const step=25;
+  ctx.strokeStyle="#eef1f6";
+  ctx.lineWidth=1;
+  for(let x=0;x<=w;x+=step){
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+  }
+  for(let y=0;y<=h;y+=step){
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+  }
+
+  ctx.strokeStyle="#d7dbe3";
+  ctx.lineWidth=2;
+  ctx.strokeRect(1,1,w-2,h-2);
+
+  // kleine Achsenmarke (optional)
+  ctx.fillStyle="#111";
+  ctx.font="18px system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif";
+  ctx.fillText("Skizze", 14, 28);
+}
+function initSketch(canvasId){
+  const c=document.getElementById(canvasId);
+  const ctx=c.getContext('2d');
+  const w=c.width, h=c.height;
+  drawGrid(ctx,w,h);
+
+  let drawing=false;
+  let last=null;
+
+  function pos(e){
+    const r=c.getBoundingClientRect();
+    const x=(e.clientX - r.left) * (c.width / r.width);
+    const y=(e.clientY - r.top) * (c.height / r.height);
+    return {x,y};
+  }
+  function start(e){ drawing=true; last=pos(e); }
+  function move(e){
+    if(!drawing) return;
+    const p=pos(e);
+    ctx.strokeStyle="#111";
+    ctx.lineWidth=4;
+    ctx.lineCap="round";
+    ctx.beginPath();
+    ctx.moveTo(last.x,last.y);
+    ctx.lineTo(p.x,p.y);
+    ctx.stroke();
+    last=p;
+  }
+  function end(){ drawing=false; last=null; scheduleSave(); }
+
+  c.addEventListener('pointerdown', (e)=>{ c.setPointerCapture(e.pointerId); start(e); });
+  c.addEventListener('pointermove', move);
+  c.addEventListener('pointerup', end);
+  c.addEventListener('pointercancel', end);
+
+  return {c,ctx,w,h};
+}
+const sketches = {};
+function snapshotSketches(){
+  const out = {};
+  for(const [k,obj] of Object.entries(sketches)){
+    try{ out[k] = obj.c.toDataURL("image/png"); }catch(e){}
+  }
+  return out;
+}
+function applySketches(saved){
+  if(!saved) return;
+  for(const [k,dataUrl] of Object.entries(saved)){
+    const obj = sketches[k];
+    if(!obj || !dataUrl) continue;
+    const img = new Image();
+    img.onload=()=>{
+      obj.ctx.clearRect(0,0,obj.w,obj.h);
+      obj.ctx.drawImage(img,0,0,obj.w,obj.h);
+    };
+    img.src=dataUrl;
+  }
+}
+function clearSketch(n){
+  const k="sketch"+n;
+  const obj=sketches[k];
+  if(!obj) return;
+  drawGrid(obj.ctx,obj.w,obj.h);
+  scheduleSave();
+}
+function markDone(n){
+  sketchDone[n]=true;
+  unlockSolution(n);
+  const f=document.getElementById('f'+n);
+  if(f){
+    f.className='feedback ok';
+    f.textContent='Als erledigt markiert ✅';
+    cacheFeedback(n,true,f.textContent);
+  }
+  scheduleSave();
+}
+/* ====== Eq-Preview (MathJax unter dem Select) ====== */
+function setEqPreview(previewId, tex){
+  const box = document.getElementById(previewId);
+  if(!box) return;
+  const el = box.querySelector('.pMath');
+  if(!el) return;
+  el.innerHTML = tex ? ('\\(' + tex + '\\)') : '';
+  if(window.MathJax) MathJax.typesetPromise([box]);
+}
+
+function hookEqPreview(selectName, previewId, map){
+  const sel = document.querySelector('select[name="'+selectName+'"]');
+  if(!sel) return;
+
+  const apply = ()=>{
+    const v = sel.value;
+    const tex = map[v] || '';
+    setEqPreview(previewId, tex);
+  };
+
+  sel.addEventListener('change', ()=>{ apply(); scheduleSave(); });
+  apply();
+}
+
+/* ==================== BOOT ==================== */
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('metaCourse').textContent = COURSE_NAME;
+  document.getElementById('metaSheet').textContent = SHEET_ID;
+
+  const st0=loadState();
+  if(st0 && typeof st0.startedAtISO==="string") startedAtISO = st0.startedAtISO;
+  else startedAtISO = new Date().toISOString();
+
+  ensureSeed();
+  shuffleMCBlocks();
+  shuffleSelectOptions();
+  // ===== Eq-Previews (schön lesbar) =====
+  hookEqPreview('eq13_res','eq13_prev_res', {
+    'a=F/m':'a=\\frac{F}{m}','a=F*m':'a=F\\cdot m','a=m/F':'a=\\frac{m}{F}','a=F-m':'a=F-m'
+  });
+  hookEqPreview('eq13_step','eq13_prev_step', {
+    'div_m':'\\text{Division durch } m','mul_m':'\\text{Multiplikation mit } m','add_m':'\\text{Addition von } m','sub_m':'\\text{Subtraktion von } m'
+  });
+
+  hookEqPreview('eq14_res','eq14_prev_res', {
+    'I=U/R':'I=\\frac{U}{R}','I=U*R':'I=U\\cdot R','I=R/U':'I=\\frac{R}{U}','I=U-R':'I=U-R'
+  });
+  hookEqPreview('eq14_step','eq14_prev_step', {
+    'div_R':'\\text{Division durch } R','mul_R':'\\text{Multiplikation mit } R','add_R':'\\text{Addition von } R','inv':'\\text{Kehrwert (hier nicht sinnvoll)}'
+  });
+
+  hookEqPreview('eq15_res','eq15_prev_res', {
+    'A=F/p':'A=\\frac{F}{p}','A=p/F':'A=\\frac{p}{F}','A=F*p':'A=F\\cdot p','A=F-p':'A=F-p'
+  });
+  hookEqPreview('eq15_step','eq15_prev_step', {
+    'mul_A':'\\text{Multiplikation mit } A','div_p':'\\text{Division durch } p','mul_p':'\\text{Multiplikation mit } p','sub_p':'\\text{Subtraktion von } p'
+  });
+
+  hookEqPreview('eq16_res','eq16_prev_res', {
+    'P=E/t':'P=\\frac{E}{t}','P=E*t':'P=E\\cdot t','P=t/E':'P=\\frac{t}{E}','P=E-t':'P=E-t'
+  });
+  hookEqPreview('eq16_step','eq16_prev_step', {
+    'div_t':'\\text{Division durch } t','mul_t':'\\text{Multiplikation mit } t','sub_t':'\\text{Subtraktion von } t','add_t':'\\text{Addition von } t'
+  });
+
+  hookEqPreview('eq17_res','eq17_prev_res', {
+    'm=rho*V':'m=\\rho\\cdot V','m=V/rho':'m=\\frac{V}{\\rho}','m=rho/V':'m=\\frac{\\rho}{V}','m=rho-V':'m=\\rho-V'
+  });
+  hookEqPreview('eq17_step','eq17_prev_step', {
+    'mul_V':'\\text{Multiplikation mit } V','div_V':'\\text{Division durch } V','mul_rho':'\\text{Multiplikation mit } \\rho','div_rho':'\\text{Division durch } \\rho'
+  });
+
+  sketches["sketch11"]=initSketch("sketch11");
+  sketches["sketch12"]=initSketch("sketch12");
+
+  const st=loadState();
+  if(st){
+    if(typeof st.studentName==="string"){
+      studentName=st.studentName;
+      const inp=document.getElementById('studentName');
+      if(inp) inp.value=studentName;
+    }
+    if(st.lastSent) lastSent=st.lastSent;
+
+    if(st.attempted) Object.assign(attempted, st.attempted);
+    if(st.firstCorrect) Object.assign(firstCorrect, st.firstCorrect);
+    if(st.wrongStreak) Object.assign(wrongStreak, st.wrongStreak);
+    if(st.solutionUnlocked) Object.assign(solutionUnlocked, st.solutionUnlocked);
+    if(st.feedbackCache) Object.assign(feedbackCache, st.feedbackCache);
+    if(st.sketchDone) Object.assign(sketchDone, st.sketchDone);
+
+    applyInputs(st.inputs);
+    applySelects(st.selects);
+    applyFeedback();
+
+    applySketches(st.sketches);
+  }
+
+  document.getElementById('studentName').addEventListener('input', updateSendBtn);
+  document.getElementById('studentName').addEventListener('change', updateSendBtn);
+  updateSendBtn();
+
+  attachAutoSave();
+  saveState();
+
+  if(window.MathJax) MathJax.typesetPromise();
+});
+</script>
+
+</body>
+</html>
